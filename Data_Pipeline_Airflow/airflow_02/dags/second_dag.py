@@ -5,7 +5,7 @@ import logging
 
 
 
-input_file = 'web-server-access-log.txt'
+input_file = '../demo_files/web-server-access-log.txt'
 url = 'https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/IBM-DB0250EN-SkillsNetwork/labs/Apache%20Airflow/Build%20a%20DAG%20using%20Airflow/web-server-access-log.txt'
 
 
