@@ -16,6 +16,7 @@ output_file = 'data_for_analytics.csv'
 
 
 def extract():
+    global input_file
     print("Inside Extract")
     # Read the contents of the file into a string
     with open(input_file, 'r') as infile, \
@@ -30,6 +31,7 @@ def extract():
 
 
 def transform():
+    global extracted_file, transformed_file
     print("Inside Transform")
     with open(extracted_file, 'r') as infile, \
             open(transformed_file, 'w') as outfile:
@@ -39,6 +41,7 @@ def transform():
 
 
 def load():
+    global transformed_file, output_file
     print("Inside Load")
     # Save the array to a CSV file
     with open(transformed_file, 'r') as infile, \
@@ -48,6 +51,7 @@ def load():
 
 
 def check():
+    global output_file
     print("Inside Check")
     # Save the array to a CSV file
     with open(output_file, 'r') as infile:
