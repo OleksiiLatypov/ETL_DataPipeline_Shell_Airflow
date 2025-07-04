@@ -106,3 +106,20 @@ execute_check = PythonOperator(
 
 # Task pipeline
 execute_extract >> execute_transform >> execute_load >> execute_check
+
+
+
+
+# export AIRFLOW_HOME=/home/project/airflow
+# echo $AIRFLOW_HOME
+
+# cp my_first_dag.py $AIRFLOW_HOME/dags
+
+# airflow dags list
+
+
+# Verify that my-first-python-etl-dag is a part of the output.
+# airflow dags list|grep "my-first-python-etl-dag"
+
+# List of all tasks in DAG
+# airflow tasks list my-first-python-etl-dag
