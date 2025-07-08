@@ -1,5 +1,9 @@
 import requests
 import logging
+from datetime import datetime, timedelta
+from airflow import DAG
+from airflow.operators.python_operator import PythonOperator
+
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
@@ -28,7 +32,7 @@ def download_file():
 
 
 
-def extract():
+def extract_file():
     with open(input_file, 'r') as infile, open(extracted_file, 'w') as outfile:
         # need timestamp and visitor_id
         for line in infile:
@@ -41,11 +45,11 @@ def extract():
 
 
 
-def transform():
+def transform_file():
     with open(extracted_file, 'r', encoding='UTF-8') as infile, open(output_file, 'w') as outfile:
         print(f'READ {extracted_file}')
         content = infile.readlines()
-        columns = 'timestamp, visitorid, year, time\n'
+        columns = 'timestamp, visitorid, year, time, month, day_of_week\n'
         outfile.write(f'{columns}')
         for el in content[1:]:
             fields = el.split(',')
@@ -53,12 +57,61 @@ def transform():
             visitorid = fields[1].strip()
             year = fields[0][:4].strip()
             time = fields[0].split()[1]
-            outfile.write(f'{timestamp}, {visitorid}, {year}, {time}\n')
+
+            # handle timestamp
+            dt = datetime.strptime(timestamp, '%Y-%m-%d %H:%M:%S')
+            month = dt.strftime('%b')
+            day_of_week = dt.strftime('%A')
+            outfile.write(f'{timestamp}, {visitorid}, {year}, {time}, {month}, {day_of_week}\n')
         logging.info(f"Transformation complete. Output saved to: {output_file}")
             
 
 
-if __name__ == '__main__':
-    download_file()
-    extract()
-    transform()
+default_args = {
+    'owner': 'Oleksii',
+    'start_date': datetime.now(),
+    'retries': 1,
+    'retry_delay': timedelta(minutes=5),
+}
+
+
+dag = DAG(
+    'my-second-python-etl-dag',
+    default_args = default_args,
+    description = 'My second DAG',
+    schedule_interval=timedelta(days=1),
+)
+
+
+
+# Define the task named download to call the `download_file` function
+
+download = PythonOperator(
+    task_id = 'download',
+    python_callable = downlaod_file,
+    dag=dag
+)
+
+
+# Define the task named execute_extract to call the `extract` function
+
+extract = PythonOperator(
+    task_id = 'extract',
+    python_callable = extract_file,
+    dag=dag
+)
+
+
+# Define the task named execute_transform to call the `transform` function
+
+transform = PythonOperator(
+    task_id = 'transform',
+    python_callable = transform_file,
+    dag=dag
+)
+
+
+download>>extract>>transform
+
+
+
