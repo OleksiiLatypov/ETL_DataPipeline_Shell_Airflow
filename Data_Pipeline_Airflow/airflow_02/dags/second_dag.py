@@ -88,7 +88,7 @@ dag = DAG(
 
 download = PythonOperator(
     task_id = 'download',
-    python_callable = downlaod_file,
+    python_callable = download_file,
     dag=dag
 )
 

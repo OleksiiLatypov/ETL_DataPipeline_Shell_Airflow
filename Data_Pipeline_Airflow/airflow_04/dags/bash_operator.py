@@ -65,11 +65,7 @@ transform = BashOperator(
 # Task: Load (zip the transformed file)
 load = BashOperator(
     task_id='load',
-    bash_command=(
-        f'echo "Zipping the transformed file..." && '
-        f'cd {log_path} && zip -r log.zip capitalized.txt && '
-        f'ls -l {log_path}'
-    ),
+    bash_command='zip log.zip capitalized.txt',
     dag=dag,
 )
 
