@@ -8,3 +8,16 @@ from datetime import timedelta
 from airflow.models import DAG
 from airflow.operators.bash_operator import BashOperator
 from airflow.utils.dates import days_ago
+
+
+#defining DAG arguments
+default_args = {
+    'owner': 'airflow',
+    'start_date': days_ago(0),
+    'email': ['latypov.oleksii.la@gmail.com'],
+    'email_on_failure': True,
+    'email_on_retry': True,
+    'retries': 1,
+    'retry_delay': timedelta(minutes=5),
+}
+
