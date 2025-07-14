@@ -21,3 +21,12 @@ default_args = {
     'retry_delay': timedelta(minutes=5),
 }
 
+
+
+# defining the DAG
+dag = DAG(
+    'ETL_toll_data',
+    schedule_interval=timedelta(days=1),
+    default_args=default_args,
+    description='Airflow Final Assignment',
+)
