@@ -46,3 +46,11 @@ extract_data_from_csv=BashOperator(
     bash_command = 'cut -d "," -f1-4 /home/project/airflow/dags/finalassignment/vehicle-data.csv > /home/project/airflow/dags/finalassignment/csv_data.csv',
     dag=dag
 )
+
+# define task extract_data_from_tsv
+
+extract_data_from_tsv = BashOperator(
+    task_id = 'extract_data_from_tsv',
+    bash_command = 'cut -f5-7 < /home/project/airflow/dags/finalassignment/tollplaza-data.tsv > /home/project/airflow/dags/finalassignment/tsv_data.csv',
+    dag=dag
+)
