@@ -34,7 +34,7 @@ dag = DAG(
 #define task unzip_data BashOperator
 unzip_data = BashOperator(
     task_id = 'unzip_data',
-    bash_command = 'tar -xzvf /home/project/airflow/dags/tolldata.tgz -C /home/project/airflow/dags/finalassignment''
+    bash_command = 'tar -xzvf /home/project/airflow/dags/tolldata.tgz -C /home/project/airflow/dags/finalassignment',
     dag=dag
 
 )
@@ -59,7 +59,28 @@ extract_data_from_tsv = BashOperator(
 # define task extract_data_from_fixed_width
 
 extract_data_from_fixed_width = BashOperator(
-    task_id = extract_data_from_fixed_width,
+    task_id = 'extract_data_from_fixed_width',
     bash_command = 'cut -c 59- < /home/project/airflow/dags/finalassignment/payment-data.txt > /home/project/airflow/dags/finalassignment/fixed_width_data.csv',
     dag=dag
 )
+
+
+consolidate_data = BashOperator(
+    task_id= 'consolidate_data',
+    bash_command='paste -d "," /home/project/airflow/dags/finalassignment/csv_data.csv \
+    /home/project/airflow/dags/finalassignment/tsv_data.csv \
+    /home/project/airflow/dags/finalassignment/fixed_width_data.csv \
+    > /home/project/airflow/dags/finalassignment/extracted_data.csv',
+    dag= dag,
+)
+
+
+transform_data = BashOperator(
+    task_id= 'transform_data',
+    bash_command= 'tr "[a-z]" "[A-Z]" < /home/project/airflow/dags/extracted_data.csv',
+    dag= dag,
+)
+
+
+
+unzip_data >> extract_data_from_csv >> extract_data_from_tsv >> extract_data_from_fixed_width >> consolidate_data >> transform_data
