@@ -54,3 +54,12 @@ extract_data_from_tsv = BashOperator(
     bash_command = 'cut -f5-7 < /home/project/airflow/dags/finalassignment/tollplaza-data.tsv > /home/project/airflow/dags/finalassignment/tsv_data.csv',
     dag=dag
 )
+
+
+# define task extract_data_from_fixed_width
+
+extract_data_from_fixed_width = BashOperator(
+    task_id = extract_data_from_fixed_width,
+    bash_command = 'cut -c 59-68 < /home/project/airflow/dags/finalassignment/payment-data.txt > /home/project/airflow/dags/finalassignment/fixed_width_data.csv',
+    dag=dag
+)
