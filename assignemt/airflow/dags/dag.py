@@ -34,7 +34,7 @@ dag = DAG(
 #define task unzip_data BashOperator
 unzip_data = BashOperator(
     task_id = 'unzip_data',
-    bash_command = 'tar -xzvf /home/project/airflow/dags/tolldata.tgz -C /home/project/airflow/dags/finalassignment',
+    bash_command = 'tar -xzvf /home/project/airflow/dags/finalassignment/tolldata.tgz -C /home/project/airflow/dags/finalassignment',
     dag=dag
 
 )
@@ -77,7 +77,7 @@ consolidate_data = BashOperator(
 
 transform_data = BashOperator(
     task_id= 'transform_data',
-    bash_command= 'tr "[a-z]" "[A-Z]" < /home/project/airflow/dags/extracted_data.csv',
+    bash_command= 'tr "[a-z]" "[A-Z]" < /home/project/airflow/dags/finalassignment/extracted_data.csv',
     dag= dag,
 )
 
