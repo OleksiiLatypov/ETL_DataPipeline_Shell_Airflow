@@ -30,3 +30,19 @@ dag = DAG(
     default_args=default_args,
     description='Airflow Final Assignment',
 )
+
+#define task unzip_data BashOperator
+unzip_data = BashOperator(
+    task_id = 'unzip_data',
+    bash_command = 'tar -xzvf /home/project/airflow/dags/tolldata.tgz -C /home/project/airflow/dags/finalassignment''
+    dag=dag
+
+)
+
+#define task extract_data_from_csv
+
+extract_data_from_csv=BashOperator(
+    task_id = 'extract_data_from_csv',
+    bash_command = 'cut -d "," -f1-4 /home/project/airflow/dags/finalassignment/vehicle-data.csv > /home/project/airflow/dags/finalassignment/csv_data.csv',
+    dag=dag
+)
