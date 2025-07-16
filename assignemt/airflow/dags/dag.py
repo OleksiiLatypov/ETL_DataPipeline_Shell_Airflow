@@ -65,6 +65,8 @@ extract_data_from_fixed_width = BashOperator(
 )
 
 
+# define task consolidate_data
+
 consolidate_data = BashOperator(
     task_id= 'consolidate_data',
     bash_command='paste -d "," /home/project/airflow/dags/finalassignment/csv_data.csv \
@@ -74,6 +76,7 @@ consolidate_data = BashOperator(
     dag= dag,
 )
 
+# define task transform_data
 
 transform_data = BashOperator(
     task_id= 'transform_data',
