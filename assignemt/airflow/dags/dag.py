@@ -3,6 +3,10 @@ from airflow.models import DAG
 from airflow.operators.bash_operator import BashOperator
 from airflow.utils.dates import days_ago
 
+
+PATH = '/home/project/airflow/dags/finalassignment'
+
+
 default_args = {
     'owner': 'airflow',
     'start_date': days_ago(0),
@@ -25,8 +29,8 @@ dag = DAG(
 # Create a task named unzip_data to unzip data
 unzip_data = BashOperator(
     task_id='unzip_data',
-    bash_command='tar -xzf /home/project/airflow/dags/finalassignment/tolldata.tgz '
-                 '-C /home/project/airflow/dags/finalassignment',
+    bash_command=f'tar -xzf {PATH}/tolldata.tgz '
+                 f'-C {PATH}',
     dag=dag,
 )
 
@@ -37,8 +41,8 @@ unzip_data = BashOperator(
 
 extract_data_from_csv = BashOperator(
     task_id='extract_data_from_csv',
-    bash_command='cut -d "," -f1-4 /home/project/airflow/dags/finalassignment/vehicle-data.csv '
-                 '> /home/project/airflow/dags/finalassignment/csv_data.csv',
+    bash_command=f'cut -d "," -f1-4 {PATH}/vehicle-data.csv '
+                 f'> {PATH}/csv_data.csv',
     dag=dag,
 )
 
@@ -49,9 +53,9 @@ extract_data_from_csv = BashOperator(
 # gsub(REGEX, REPLACEMENT, TARGET)
 extract_data_from_tsv = BashOperator(
     task_id='extract_data_from_tsv',
-    bash_command="cut -f5-7 /home/project/airflow/dags/finalassignment/tollplaza-data.tsv | "
+    bash_command=f"cut -f5-7 {PATH}/tollplaza-data.tsv | "
                  "awk '{gsub(/\\r/, \"\"); print}' | tr '\\t' ',' "
-                 "> /home/project/airflow/dags/finalassignment/tsv_data.csv",
+                 f"> {PATH}/tsv_data.csv",
     dag=dag,
 )
 
@@ -61,9 +65,9 @@ extract_data_from_tsv = BashOperator(
 
 extract_data_from_fixed_width = BashOperator(
     task_id='extract_data_from_fixed_width',
-    bash_command="cut -c 59- /home/project/airflow/dags/finalassignment/payment-data.txt | "
+    bash_command=f"cut -c 59- {PATH}/payment-data.txt | "
                  "awk '{$1=$1; gsub(/[ ]+/, \",\"); print}' "
-                 "> /home/project/airflow/dags/finalassignment/fixed_width_data.csv",
+                 f"> {PATH}/fixed_width_data.csv",
     dag=dag,
 )
 
@@ -74,10 +78,10 @@ extract_data_from_fixed_width = BashOperator(
 consolidate_data = BashOperator(
     task_id='consolidate_data',
     bash_command='paste -d "," '
-                 '/home/project/airflow/dags/finalassignment/csv_data.csv '
-                 '/home/project/airflow/dags/finalassignment/tsv_data.csv '
-                 '/home/project/airflow/dags/finalassignment/fixed_width_data.csv '
-                 '> /home/project/airflow/dags/finalassignment/extracted_data.csv',
+                 f'{PATH}/csv_data.csv '
+                 f'{PATH}/tsv_data.csv '
+                 f'{PATH}/fixed_width_data.csv '
+                 f'> {PATH}/extracted_data.csv',
     dag=dag,
 )
 
@@ -88,8 +92,8 @@ consolidate_data = BashOperator(
 transform_data = BashOperator(
     task_id='transform_data',
     bash_command='sed \'s/[^,]*/\\U&/4\' '
-                 '/home/project/airflow/dags/finalassignment/extracted_data.csv '
-                 '> /home/project/airflow/dags/finalassignment/staging/transformed_data.csv',
+                 f'{PATH}/extracted_data.csv '
+                 f'> {PATH}/staging/transformed_data.csv',
     dag=dag,
 )
 
