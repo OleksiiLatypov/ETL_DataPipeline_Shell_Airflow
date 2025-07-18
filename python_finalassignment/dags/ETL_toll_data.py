@@ -3,6 +3,10 @@ import tarfile
 import os
 import requests
 import logging 
+from datetime import timedelta
+from airflow.models import DAG
+from airflow.operators.python_operator import PythonOperotr
+from airflow.utils.dates import days_ago
 
 
 logging.basicConfig(level=logging.INFO,  format='%(asctime)s - %(levelname)s - %(message)s')
@@ -29,7 +33,7 @@ def download_dataset(url, destination):
 
 
 
-def unzip_tolldata(source: str, file: str):
+def untar_dataset (source: str, file: str):
     """
     Extracts the contents of the source dataset .tgz file to the specified
     destination directory.
@@ -43,7 +47,7 @@ def unzip_tolldata(source: str, file: str):
             tgz.extractall(source)
             logging.info('Unzip Successfully!')
     except Exception as e:
-        logging.ERROR(f"Error extracting {source}: {e}")
+        logging.error(f"Error extracting {source}: {e}")
     
 
 
@@ -93,10 +97,39 @@ def transform_data(destination: str):
     df.to_csv(f'{destination}/transformed.csv')
     logging.info('capitilized letters transformed')
 
-print(download_dataset(url, source_dir))
-print(unzip_tolldata(source_dir, source_file))
-print(extract_data_from_csv(source_dir, 'vehicle-data.csv', destination_dir))
-print(extract_data_from_tsv(source_dir, 'tollplaza-data.tsv', destination_dir))
-print(extract_data_from_fixed_width(source_dir, 'payment-data.txt', destination_dir))
-print(consolidate_data(destination_dir, 'csv_data.csv', 'tsv_data.csv', 'fixed_width_data.csv', 'extracted_data.csv'))
-print(transform_data(destination_dir))
+
+# define DAG arguments
+
+default_args = {
+    'owner': 'airflow',
+    'start_date': days_ago(0),
+    'email': ['latypov.oleksii.la@gmail.com'],
+    'email_on_failure': True,
+    'email_on_retry': True,
+    'retries': 1,
+    'retry_delay': timedelta(minutes=5),
+}
+
+
+#define DAG
+
+dag = DAG(
+    'ETL_toll_data',
+    schedule_interval=timedelta(days=1),
+    default_args=default_args,
+    description='Airflow Final Assignment',
+)
+
+download_data = PythonOperator(
+    task_id = 'download_data',
+    python_callable = download_dataset,
+    op_args=[url, source_dir],
+    dag=dag
+)
+
+unzip_data = PythonOperator(
+    task_id = 'unzip_data',
+    python_callable = untar_dataset ,
+    op_args=[source_dir, source_file],
+    dag=dag
+)
