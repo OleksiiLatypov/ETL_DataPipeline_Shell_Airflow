@@ -59,7 +59,21 @@ def extract_data_from_tsv(source: str, file: str, destination: str):
 
 #/workspaces/ETL_DataPipeline_Shell_Airflow/python_finalassignment/dags/python_etl/staging/tolldata.tgz
 
+def extract_data_from_fixed_width(source: str, file: str, destination: str):
+    with open(f'{source}/{file}', 'r') as f_in, open (f'{destination}/fixed_width_data.csv', 'w') as f_out:
+        res = []
+        for i, line in enumerate(f_in):
+            
+            payment_code = line.split()[-2]
+            vehicle_code = line.split()[-1]
+            f_out.write(f'{payment_code}, {vehicle_code}\n')
+            if i == 10:
+                break
+
+
+
 print(download_dataset(url, source_dir))
 print(unzip_tolldata(source_dir, source_file))
 print(extract_data_from_csv(source_dir, 'vehicle-data.csv', destination_dir))
 print(extract_data_from_tsv(source_dir, 'tollplaza-data.tsv', destination_dir))
+print(extract_data_from_fixed_width(source_dir, 'payment-data.txt', destination_dir))
