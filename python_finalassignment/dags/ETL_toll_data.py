@@ -44,24 +44,25 @@ def unzip_tolldata(source: str, file: str):
 
 
 def extract_data_from_csv(source: str, file: str, destination_dir: str):
-    df = pd.read_csv(f'{source}/{file}')
+    df = pd.read_csv(f'{source}/{file}', sep=',', header=None)
     data_to_extract = df.iloc[:, :4]
-    data_to_extract.to_csv(f'{destination_dir}/csv_data.csv', index=False)
+    data_to_extract.to_csv(f'{destination_dir}/csv_data.csv', index=False, header=['Rowid', 'Timestamp', 'Anonymized_Vehicle_number', 'Vehicle_type'])
     return 'Data extrcated succsessfulle!!'
 
 
 
 def extract_data_from_tsv(source: str, file: str, destination: str):
-    df = pd.read_csv(f'{source}/{file}', sep='\t')
-    data_to_extract = df.iloc[:, :3]
-    data_to_extract.to_csv(f'{destination}/tsv_data.csv', index=False)
+    df = pd.read_csv(f'{source}/{file}', sep='\t', header=None)
+    data_to_extract = df.iloc[:, 4:]
+    data_to_extract.to_csv(f'{destination}/tsv_data.csv', index=False, header=['Number_of_axles', 'Tollplaza_id', 'Tollplaza code'])
     return 'TSV success!'
 
 #/workspaces/ETL_DataPipeline_Shell_Airflow/python_finalassignment/dags/python_etl/staging/tolldata.tgz
 
 def extract_data_from_fixed_width(source: str, file: str, destination: str):
     with open(f'{source}/{file}', 'r') as f_in, open (f'{destination}/fixed_width_data.csv', 'w') as f_out:
-        res = []
+        header= f'Type_of_payment_code,Vehicle_Code\n'
+        f_out.write(header)
         for line in f_in:
             payment_code = line.split()[-2].strip()
             vehicle_code = line.split()[-1].strip()
@@ -71,9 +72,15 @@ def extract_data_from_fixed_width(source: str, file: str, destination: str):
 
 
 def consolidate_data(destination: str, *args):
-    for arg in args:
-        df = pd.read_csv(f'{destination}/{arg}')
-        print(df.head())
+    csv_data, tsv_data, fixed_width_data, extracted_data = args
+    df_1 = pd.read_csv(f'{destination}/{csv_data}')
+    df_2 = pd.read_csv(f'{destination}/{tsv_data}')
+    df_3 = pd.read_csv(f'{destination}/{fixed_width_data}')
+    final_df = pd.concat([df_1, df_2, df_3], axis=1)
+    final_df.columns = final_df.columns.str.upper()
+    final_df.to_csv(f'{destination}/{extracted_data}', index=False)
+    print('Consolidate data saved successefully!')
+        
 
 
 print(download_dataset(url, source_dir))
@@ -81,4 +88,4 @@ print(unzip_tolldata(source_dir, source_file))
 print(extract_data_from_csv(source_dir, 'vehicle-data.csv', destination_dir))
 print(extract_data_from_tsv(source_dir, 'tollplaza-data.tsv', destination_dir))
 print(extract_data_from_fixed_width(source_dir, 'payment-data.txt', destination_dir))
-print(consolidate_data(destination_dir, 'csv_data.csv', 'tsv_data.csv', 'fixed_width_data.csv'))
+print(consolidate_data(destination_dir, 'csv_data.csv', 'tsv_data.csv', 'fixed_width_data.csv', 'extracted_data.csv'))
