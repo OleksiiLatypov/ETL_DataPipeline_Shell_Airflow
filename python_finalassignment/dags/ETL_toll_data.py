@@ -1,3 +1,5 @@
+#sudo mkdir -p /home/project/airflow/dags/python_etl/staging
+#sudo chmod -R 777 /home/project/airflow/dags/python_etl
 import pandas as pd 
 import tarfile
 import os
@@ -5,7 +7,7 @@ import requests
 import logging 
 from datetime import timedelta
 from airflow.models import DAG
-from airflow.operators.python_operator import PythonOperotr
+from airflow.operators.python_operator import PythonOperator
 from airflow.utils.dates import days_ago
 
 
