@@ -7,10 +7,10 @@ from datetime import datetime
 from kafka import KafkaConsumer
 import mysql.connector
 
-TOPIC='set your topic here'
-DATABASE = 'set your database name here'
-USERNAME = 'set your username here'
-PASSWORD = 'set your database password here'
+TOPIC='topic'
+DATABASE = 'tolldata'
+USERNAME = 'root'
+PASSWORD = 'your password'
 
 print("Connecting to the database")
 try:
