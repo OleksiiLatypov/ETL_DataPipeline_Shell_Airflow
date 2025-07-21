@@ -133,3 +133,44 @@ unzip_data = PythonOperator(
     op_args=[source_dir, source_file],
     dag=dag
 )
+
+extract_data_from_csv = PythonOperator(
+    task_id = 'extract_data_from_csv',
+    python_callable = extract_data_from_csv ,
+    op_args=[source_dir, 'vehicle-data.csv', destination_dir],
+    dag=dag
+)
+
+
+extract_data_from_tsv = PythonOperator(
+    task_id = 'extract_data_from_tsv',
+    python_callable = extract_data_from_tsv ,
+    op_args=[source_dir, 'tollplaza-data.tsv', destination_dir],
+    dag=dag
+)
+
+
+extract_data_from_fixed_width = PythonOperator(
+    task_id = 'extract_data_from_fixed_width',
+    python_callable = extract_data_from_fixed_width ,
+    op_args=[source_dir, 'payment-data.txt', destination_dir],
+    dag=dag
+)
+
+
+consolidate_data = PythonOperator( 
+    task_id = 'consolidate_data',
+    python_callable = consolidate_data,
+    op_args=[destination_dir, 'csv_data.csv', 'tsv_data.csv', 'fixed_width_data.csv', 'extracted_data.csv'],
+    dag=dag
+)
+
+
+transform_data = PythonOperator( 
+    task_id = 'transform_data',
+    python_callable = transform_data,
+    op_args=[destination_dir],
+    dag=dag
+)
+
+download_data >> unzip_data >> extract_data_from_csv >> extract_data_from_tsv >> extract_data_from_fixed_width >> consolidate_data >> transform_data
