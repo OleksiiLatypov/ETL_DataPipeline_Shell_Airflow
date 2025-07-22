@@ -18,9 +18,9 @@ while True:
             producer.flush()
             trans_id +=1
         else:
-            print('invalid ATM number')
+            print('Invalid ATM number. Try 1 or 2')
     else:
-        print('invalid ATM number')
+        print('Invalid input. Try again')
         continue
 
 producer.close()
